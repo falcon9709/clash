@@ -1,17 +1,18 @@
-name: 同步
+name: sync-danwangshi-scripts
 on:
   schedule:
-    - cron: '0 1 * * *'
+    - cron: '1 0,15 * * *'
   workflow_dispatch:
   watch:
     types: started
+  push:
+    branches: [ master ]
   repository_dispatch:
-    types: repo-sync
+    types: sync-lxk0301-scripts
 jobs:
   repo-sync:
     env:
-      PAT: ${{ github.event.client_payload.PAT || secrets.PAT }} #此处PAT需要申请，教程详见：https://www.jianshu.com/p/bb82b3ad1d11
-
+      PAT: ${{ secrets.PAT }} #此处PAT需要申请，教程详见：https://www.jianshu.com/p/bb82b3ad1d11
     runs-on: ubuntu-latest
     if: github.event.repository.owner.id == github.event.sender.id
     steps:
@@ -19,11 +20,11 @@ jobs:
         with:
           persist-credentials: false
 
-      - name: 开始🔄自动同步🔄
+      - name: sync danwangshi-scripts
         uses: repo-sync/github-sync@v2
         if: env.PAT
         with:
           source_repo: "https://github.com/Quitzera087/now-subconverter.git"
           source_branch: "master"
-          destination_branch: "master"
-          github_token: ${{ github.event.client_payload.PAT || secrets.PAT }}
+          destination_branch: "main"
+          github_token: ${{ secrets.PAT }}
